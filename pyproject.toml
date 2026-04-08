@@ -83,6 +83,10 @@ section-order = [
     "local-folder",
 ]
 
+[tool.zuban]
+exclude = ["wagtailtraverse/tests/settings.py"]
+exclude_gitignore = true
+
 [tool.bandit]
 exclude_dirs = [
     "*/tests/*",

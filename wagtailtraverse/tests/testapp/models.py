@@ -54,7 +54,7 @@ class SearchTestPage(Page):
 
     text = models.TextField(blank=True)
 
-    content_panels = Page.content_panels + [
+    content_panels = Page.content_panels + [  # type: ignore[assignment]
         FieldPanel("streamfield_with_block"),
         FieldPanel("streamfield_with_list"),
         FieldPanel("streamfield_with_struct"),

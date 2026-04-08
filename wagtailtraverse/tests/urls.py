@@ -1,12 +1,12 @@
 from django.conf import settings
-from django.urls import include, re_path
+from django.urls import URLPattern, URLResolver, include, re_path
 
 from wagtail import urls as wagtailcore_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
 
-urlpatterns = [
+urlpatterns: list[URLPattern | URLResolver] = [
     re_path(r"^admin/", include(wagtailadmin_urls)),
     re_path(r"^documents/", include(wagtaildocs_urls)),
     re_path(r"", include(wagtailcore_urls)),

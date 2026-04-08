@@ -1,6 +1,9 @@
+from typing import cast
+
 from django.test import TestCase
 
 from wagtail.blocks import (
+    Block,
     BoundBlock,
     CharBlock,
     FloatBlock,
@@ -8,6 +11,7 @@ from wagtail.blocks import (
     StructBlock,
 )
 from wagtail.contrib.typed_table_block.blocks import TypedTableBlock
+from wagtail.fields import StreamField
 
 from wagtailtraverse import traverse_block, traverse_value
 from wagtailtraverse.tests.testapp.models import SearchTestPage
@@ -15,18 +19,24 @@ from wagtailtraverse.tests.testapp.models import SearchTestPage
 
 class TraverseBlockTest(TestCase):
     def test_block(self):
-        streamfield = SearchTestPage._meta.get_field("streamfield_with_block")
-        child = streamfield.stream_block.child_blocks["block"]
-        results = list(traverse_block(child))
+        streamfield: StreamField = cast(
+            StreamField,
+            SearchTestPage._meta.get_field("streamfield_with_block"),
+        )
+        child: Block = streamfield.stream_block.child_blocks["block"]
+        results: list[tuple[str, Block]] = list(traverse_block(child))
         self.assertEqual(len(results), 1)
         path, block = results[0]
         self.assertEqual(path, "block")
         self.assertIsInstance(block, CharBlock)
 
     def test_listblock(self):
-        streamfield = SearchTestPage._meta.get_field("streamfield_with_list")
-        child = streamfield.stream_block.child_blocks["list"]
-        results = list(traverse_block(child))
+        streamfield: StreamField = cast(
+            StreamField,
+            SearchTestPage._meta.get_field("streamfield_with_list"),
+        )
+        child: ListBlock = streamfield.stream_block.child_blocks["list"]
+        results: list[tuple[str, Block]] = list(traverse_block(child))
         self.assertEqual(len(results), 2)
         self.assertEqual(results[0][0], "list")
         self.assertIsInstance(results[0][1], ListBlock)
@@ -34,9 +44,12 @@ class TraverseBlockTest(TestCase):
         self.assertIsInstance(results[1][1], CharBlock)
 
     def test_structblock(self):
-        streamfield = SearchTestPage._meta.get_field("streamfield_with_struct")
-        child = streamfield.stream_block.child_blocks["struct"]
-        results = list(traverse_block(child))
+        streamfield: StreamField = cast(
+            StreamField,
+            SearchTestPage._meta.get_field("streamfield_with_struct"),
+        )
+        child: StructBlock = streamfield.stream_block.child_blocks["struct"]
+        results: list[tuple[str, Block]] = list(traverse_block(child))
         self.assertEqual(len(results), 3)
         self.assertEqual(results[0][0], "struct")
         self.assertIsInstance(results[0][1], StructBlock)
@@ -44,9 +57,12 @@ class TraverseBlockTest(TestCase):
         self.assertEqual(results[2][0], "struct.surname")
 
     def test_typedtableblock(self):
-        streamfield = SearchTestPage._meta.get_field("streamfield_with_table")
-        child = streamfield.stream_block.child_blocks["table"]
-        results = list(traverse_block(child))
+        streamfield: StreamField = cast(
+            StreamField,
+            SearchTestPage._meta.get_field("streamfield_with_table"),
+        )
+        child: TypedTableBlock = streamfield.stream_block.child_blocks["table"]
+        results: list[tuple[str, Block]] = list(traverse_block(child))
         self.assertEqual(len(results), 3)
         self.assertEqual(results[0][0], "table")
         self.assertIsInstance(results[0][1], TypedTableBlock)
@@ -56,9 +72,14 @@ class TraverseBlockTest(TestCase):
         self.assertIsInstance(results[2][1], FloatBlock)
 
     def test_parent_path(self):
-        streamfield = SearchTestPage._meta.get_field("streamfield_with_list")
-        child = streamfield.stream_block.child_blocks["list"]
-        results = list(traverse_block(child, parent="body"))
+        streamfield: StreamField = cast(
+            StreamField,
+            SearchTestPage._meta.get_field("streamfield_with_list"),
+        )
+        child: ListBlock = streamfield.stream_block.child_blocks["list"]
+        results: list[tuple[str, Block]] = list(
+            traverse_block(child, parent="body")
+        )
         self.assertEqual(results[0][0], "body.list")
         self.assertEqual(results[1][0], "body.list.item")
 
